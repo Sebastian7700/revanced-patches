@@ -12,7 +12,6 @@ public final class ActionButtonsFilter extends Filter {
 
     private final StringFilterGroup actionBarRule;
     private final StringFilterGroup bufferFilterPathRule;
-    private final StringFilterGroup bufferFilterPathRuleNew;
     private final ByteArrayFilterGroupList bufferButtonsGroupList = new ByteArrayFilterGroupList();
 
     public ActionButtonsFilter() {
@@ -25,10 +24,6 @@ public final class ActionButtonsFilter extends Filter {
         bufferFilterPathRule = new StringFilterGroup(
                 null,
                 "|ContainerType|button."
-        );
-        bufferFilterPathRuleNew = new StringFilterGroup(
-                null,
-                "video_action_button_with_vm_input."
         );
         final StringFilterGroup downloadButton = new StringFilterGroup(
                 Settings.HIDE_ACTION_BUTTON_DOWNLOAD,
@@ -44,7 +39,6 @@ public final class ActionButtonsFilter extends Filter {
         );
         addPathCallbacks(
                 bufferFilterPathRule,
-                bufferFilterPathRuleNew,
                 downloadButton,
                 likeDislikeContainer,
                 songVideoButton
@@ -53,7 +47,7 @@ public final class ActionButtonsFilter extends Filter {
         bufferButtonsGroupList.addAll(
                 new ByteArrayFilterGroup(
                         Settings.HIDE_ACTION_BUTTON_COMMENT,
-                        "yt_outline_message_bubble"
+                        "music-comment-panel"
                 ),
                 new ByteArrayFilterGroup(
                         Settings.HIDE_ACTION_BUTTON_ADD_TO_PLAYLIST,
@@ -93,6 +87,6 @@ public final class ActionButtonsFilter extends Filter {
         if (matchedGroup == actionBarRule && !isEveryFilterGroupEnabled()) {
             return false;
         }
-        return (matchedGroup != bufferFilterPathRule && matchedGroup != bufferFilterPathRuleNew) || bufferButtonsGroupList.check(buffer).isFiltered();
+        return matchedGroup != bufferFilterPathRule || bufferButtonsGroupList.check(buffer).isFiltered();
     }
 }
