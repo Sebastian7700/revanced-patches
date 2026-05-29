@@ -47,7 +47,7 @@ public final class ActionButtonsFilter extends Filter {
         bufferButtonsGroupList.addAll(
                 new ByteArrayFilterGroup(
                         Settings.HIDE_ACTION_BUTTON_COMMENT,
-                        "music-comment-panel"
+                        "yt_outline_message_bubble"
                 ),
                 new ByteArrayFilterGroup(
                         Settings.HIDE_ACTION_BUTTON_ADD_TO_PLAYLIST,
@@ -80,13 +80,19 @@ public final class ActionButtonsFilter extends Filter {
 
     @Override
     public boolean isFiltered(String path, String identifier, String allValue, byte[] buffer,
-                              StringFilterGroup matchedGroup, FilterContentType contentType, int contentIndex) {
+                            StringFilterGroup matchedGroup, FilterContentType contentType, int contentIndex) {
         if (!path.startsWith(VIDEO_ACTION_BAR_PATH_PREFIX)) {
-            return false;
+                return false;
         }
         if (matchedGroup == actionBarRule && !isEveryFilterGroupEnabled()) {
-            return false;
+                return false;
         }
-        return matchedGroup != bufferFilterPathRule || bufferButtonsGroupList.check(buffer).isFiltered();
+        
+        // TRUNCATION FIX:
+        // Create a view of the first 400 bytes to check the active properties.
+        // This entirely ignores the global font/icon dictionary appended to the end of the payload.
+        byte[] truncatedBuffer = java.util.Arrays.copyOf(buffer, Math.min(buffer.length, 400));
+        
+        return matchedGroup != bufferFilterPathRule || bufferButtonsGroupList.check(truncatedBuffer).isFiltered();
     }
 }
